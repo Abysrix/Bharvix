@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 const WORD = "BHARVIX";
 
@@ -17,7 +16,6 @@ interface PreloaderProps {
  * performed on entry. At 100% the curtain lifts to reveal the hero beneath.
  */
 export default function Preloader({ onComplete }: PreloaderProps) {
-  const reduced = usePrefersReducedMotion();
   const [pct, setPct] = useState(0);
   const [done, setDone] = useState(false);
   const rafRef = useRef<number | null>(null);
@@ -25,18 +23,6 @@ export default function Preloader({ onComplete }: PreloaderProps) {
   useEffect(() => {
     let timeoutId1: NodeJS.Timeout;
     let timeoutId2: NodeJS.Timeout;
-
-    if (reduced) {
-      setPct(100);
-      timeoutId1 = setTimeout(() => {
-        setDone(true);
-        timeoutId2 = setTimeout(() => onComplete?.(), 300);
-      }, 350);
-      return () => {
-        clearTimeout(timeoutId1);
-        clearTimeout(timeoutId2);
-      };
-    }
 
     const DURATION = 1650; // ms to reach 100
     let lastTime = performance.now();
@@ -73,7 +59,7 @@ export default function Preloader({ onComplete }: PreloaderProps) {
       clearTimeout(timeoutId1);
       clearTimeout(timeoutId2);
     };
-  }, [reduced, onComplete]);
+  }, [onComplete]);
 
   return (
     <AnimatePresence>
