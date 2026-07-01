@@ -7,6 +7,7 @@ import Hero from "@/components/sections/Hero";
 import About from "@/components/sections/About";
 import StudioModel from "@/components/sections/StudioModel";
 import Ambition from "@/components/sections/Ambition";
+import Products from "@/components/sections/Products";
 import Founders from "@/components/sections/Founders";
 import Vision from "@/components/sections/Vision";
 import CTA from "@/components/sections/CTA";
@@ -30,6 +31,7 @@ export default function Home() {
         <About />
         <StudioModel />
         <Ambition />
+        <Products />
         <Founders />
         <Vision />
         <CTA />

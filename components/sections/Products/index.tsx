@@ -27,79 +27,72 @@ const comingSoonProducts = [
 
 export default function Products() {
   return (
-    <section id="products" className="section-padding relative overflow-hidden">
-      {/* Background */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(99,102,241,0.06) 0%, transparent 70%)",
-        }}
-      />
+    // NOTE: no `overflow-hidden` here — it would break the GSAP-pinned stage
+    // inside UnipostShowcase. Decorative bleed is clipped by an inner wrapper.
+    <section id="products" className="section-padding relative">
+      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div
+          className="absolute inset-0"
+          style={{ background: "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(99,102,241,0.06) 0%, transparent 70%)" }}
+        />
+      </div>
 
-      <div className="container-custom relative">
-        {/* Section header */}
-        <div className="mb-16">
-          <motion.span
-            className="label text-violet-400/60 mb-4 block"
+      {/* Header */}
+      <div className="container-custom relative mb-4">
+        <motion.span
+          className="mb-4 block font-mono text-[11px] uppercase tracking-[0.2em] text-violet-400/60"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+        >
+          Our Portfolio
+        </motion.span>
+
+        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+          <div className="overflow-hidden py-[0.04em]">
+            <motion.h2
+              className="font-display font-bold text-white"
+              style={{ fontSize: "clamp(2.5rem, 5.5vw, 5.5rem)", lineHeight: 1, letterSpacing: "-0.04em" }}
+              initial={{ y: "110%" }}
+              whileInView={{ y: "0%" }}
+              viewport={{ once: true }}
+              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            >
+              Products that <span className="text-gradient-purple">matter.</span>
+            </motion.h2>
+          </div>
+
+          <motion.p
+            className="max-w-xs text-sm leading-relaxed text-white/30 md:text-right"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
+            transition={{ delay: 0.4 }}
           >
-            Our Portfolio
-          </motion.span>
-
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
-            <div className="overflow-hidden">
-              <motion.h2
-                className="font-display font-bold text-white"
-                style={{
-                  fontSize: "clamp(2.5rem, 5.5vw, 5.5rem)",
-                  lineHeight: "1",
-                  letterSpacing: "-0.04em",
-                }}
-                initial={{ y: "105%" }}
-                whileInView={{ y: "0%" }}
-                viewport={{ once: true }}
-                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-              >
-                Products that
-                <br />
-                <span className="text-gradient-purple">matter.</span>
-              </motion.h2>
-            </div>
-
-            <motion.p
-              className="text-white/30 text-sm leading-relaxed max-w-xs md:text-right"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.4 }}
-            >
-              Every product we ship is a bet we&apos;re making on India&apos;s
-              digital future.
-            </motion.p>
-          </div>
+            Every product we ship is a bet we&apos;re making on India&apos;s
+            digital future.
+          </motion.p>
         </div>
+      </div>
 
-        {/* Featured: Unipost */}
-        <UnipostShowcase />
+      {/* Featured: Unipost — full-bleed pinned reveal */}
+      <UnipostShowcase />
 
-        {/* Divider with label */}
+      {/* Coming next */}
+      <div className="container-custom relative">
         <motion.div
-          className="flex items-center gap-4 my-8"
+          className="my-10 flex items-center gap-4"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.2 }}
         >
-          <div className="flex-1 h-px bg-white/[0.05]" />
-          <span className="label text-white/20">Coming Next</span>
-          <div className="flex-1 h-px bg-white/[0.05]" />
+          <div className="h-px flex-1 bg-white/[0.05]" />
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/20">Coming Next</span>
+          <div className="h-px flex-1 bg-white/[0.05]" />
         </motion.div>
 
-        {/* Coming soon products */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {comingSoonProducts.map((product, i) => (
             <ProductCard key={product.name} {...product} index={i} />
           ))}

@@ -1,291 +1,323 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowUpRight, BarChart3, Calendar, TrendingUp, Star } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
+import { Calendar, BarChart3, TrendingUp, Star, ArrowUpRight } from "lucide-react";
+import { gsap, ScrollTrigger, registerGsap } from "@/lib/gsap";
+import { useMounted } from "@/hooks/useMounted";
+import { useBreakpoint } from "@/hooks/useMediaQuery";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+import { useTilt } from "@/hooks/useTilt";
+import DashboardMockup from "./mockups/DashboardMockup";
+import PhoneMockup from "./mockups/PhoneMockup";
 
-const features = [
-  {
-    icon: Calendar,
-    title: "Smart Scheduling",
-    description:
-      "AI picks the best time to post based on your audience's behaviour — across Instagram, LinkedIn, X and more.",
-    color: "#8b5cf6",
-  },
-  {
-    icon: BarChart3,
-    title: "Deep Analytics",
-    description:
-      "Understand what's actually working. Engagement, reach, and growth — broken down to the post level.",
-    color: "#6366f1",
-  },
-  {
-    icon: TrendingUp,
-    title: "Growth Coach",
-    description:
-      "Your AI growth partner. Gives actionable, weekly recommendations to grow your audience faster.",
-    color: "#3b82f6",
-  },
-  {
-    icon: Star,
-    title: "Creator Score",
-    description:
-      "A single score that measures your social authority across platforms. Track improvement over time.",
-    color: "#ec4899",
-  },
+type Feature = {
+  icon: typeof Calendar;
+  title: string;
+  body: string;
+  color: string;
+  pos: string;
+  side: 1 | -1;
+};
+
+const features: Feature[] = [
+  { icon: Calendar, title: "Smart Scheduling", body: "AI posts at each platform's peak time.", color: "#8b5cf6", pos: "left-[2%] top-[15%]", side: -1 },
+  { icon: BarChart3, title: "Deep Analytics", body: "Post-level reach, engagement & growth.", color: "#6366f1", pos: "left-[1%] top-[47%]", side: -1 },
+  { icon: TrendingUp, title: "Growth Coach", body: "Weekly AI moves to grow faster.", color: "#3b82f6", pos: "right-[2%] top-[14%]", side: 1 },
+  { icon: Star, title: "Creator Score", body: "One number for your social authority.", color: "#ec4899", pos: "right-[2%] top-[46%]", side: 1 },
 ];
 
-function MockDashboard() {
+/* ------------------------------------------------------------------ *
+ * Cursor-reactive feature callout (tilts toward the pointer)
+ * ------------------------------------------------------------------ */
+function FeatureCallout({ feature }: { feature: Feature }) {
+  const tilt = useTilt<HTMLDivElement>({ max: 10 });
+  const Icon = feature.icon;
   return (
     <div
-      className="relative rounded-2xl overflow-hidden border border-white/[0.07]"
-      style={{ background: "rgba(10, 10, 18, 0.95)" }}
+      ref={tilt.ref}
+      {...tilt.bind}
+      data-cursor="pointer"
+      className="w-[190px] rounded-2xl border border-white/[0.08] bg-black/50 p-4 backdrop-blur-xl transition-colors duration-300 hover:border-white/20"
+      style={{
+        transform: `rotateX(${tilt.rotate.x}deg) rotateY(${tilt.rotate.y}deg)`,
+        transformStyle: "preserve-3d",
+        transition: "transform 0.2s ease-out",
+        boxShadow: `0 20px 50px -20px ${feature.color}30`,
+      }}
     >
-      {/* Top bar */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.05]">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-red-500/60" />
-          <div className="w-3 h-3 rounded-full bg-yellow-500/60" />
-          <div className="w-3 h-3 rounded-full bg-green-500/60" />
-        </div>
-        <div className="flex-1 mx-4">
-          <div className="w-40 h-5 rounded-md bg-white/[0.04] flex items-center justify-center mx-auto">
-            <span className="text-white/20 font-mono text-[9px]">app.unipost.in</span>
-          </div>
-        </div>
-        <div className="w-12" />
+      <div
+        className="mb-3 flex h-8 w-8 items-center justify-center rounded-lg"
+        style={{ background: `${feature.color}18`, border: `1px solid ${feature.color}30` }}
+      >
+        <Icon size={14} style={{ color: feature.color }} />
+      </div>
+      <div className="mb-1 text-sm font-semibold text-white">{feature.title}</div>
+      <p className="text-[11px] leading-relaxed text-white/40">{feature.body}</p>
+      {/* connector dot */}
+      <span
+        className={`absolute top-1/2 h-2 w-2 -translate-y-1/2 rounded-full ${feature.side === -1 ? "-right-1" : "-left-1"}`}
+        style={{ background: feature.color, boxShadow: `0 0 10px ${feature.color}` }}
+      />
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ *
+ * PINNED REVEAL — Apple-keynote scroll experience (desktop / xl+)
+ * ------------------------------------------------------------------ */
+function PinnedReveal() {
+  const stageRef = useRef<HTMLDivElement>(null);
+  const glowRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLDivElement>(null);
+  const dashRef = useRef<HTMLDivElement>(null);
+  const phoneRef = useRef<HTMLDivElement>(null);
+  const ctaRef = useRef<HTMLDivElement>(null);
+  const hintRef = useRef<HTMLDivElement>(null);
+  const featureRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  // Dashboard mouse-follow highlight (its "reacts to cursor")
+  const [glow, setGlow] = useState({ x: 50, y: 50, on: false });
+
+  useEffect(() => {
+    registerGsap();
+    if (!stageRef.current) return;
+
+    const ctx = gsap.context(() => {
+      const feats = featureRefs.current.filter(Boolean) as HTMLDivElement[];
+
+      gsap.set(titleRef.current, { opacity: 0, y: 120, scale: 1.12 });
+      gsap.set(glowRef.current, { opacity: 0.12, scale: 0.6 });
+      gsap.set(dashRef.current, {
+        opacity: 0,
+        scale: 0.5,
+        rotationX: 45,
+        yPercent: 16,
+        transformPerspective: 1200,
+        transformOrigin: "50% 60%",
+      });
+      gsap.set(phoneRef.current, {
+        opacity: 0,
+        x: 160,
+        y: 50,
+        rotationY: -26,
+        scale: 0.85,
+        transformPerspective: 1000,
+      });
+      feats.forEach((f, i) => gsap.set(f, { opacity: 0, y: 30, x: features[i].side * 55 }));
+      gsap.set(ctaRef.current, { opacity: 0, y: 30 });
+
+      const tl = gsap.timeline({
+        defaults: { ease: "power3.out" },
+        scrollTrigger: {
+          trigger: stageRef.current,
+          start: "top top",
+          end: "+=3200",
+          scrub: 1,
+          pin: true,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      tl.to(hintRef.current, { opacity: 0, duration: 0.8 }, 0)
+        .to(titleRef.current, { opacity: 1, y: 0, scale: 1, duration: 2 }, 0)
+        .to(glowRef.current, { opacity: 0.5, scale: 1, duration: 7 }, 0)
+        .to(dashRef.current, { opacity: 1, scale: 0.82, rotationX: 18, yPercent: 6, duration: 2.4 }, 0.8)
+        .to(dashRef.current, { scale: 1, rotationX: 0, yPercent: 0, duration: 2.4 }, 3.4)
+        .to(phoneRef.current, { opacity: 1, x: 0, y: 0, rotationY: -12, scale: 1, duration: 2 }, 4.6)
+        .to(feats, { opacity: 1, x: 0, y: 0, duration: 1.6, stagger: 0.45 }, 4.9)
+        .to(ctaRef.current, { opacity: 1, y: 0, duration: 1.5 }, 6.6);
+    }, stageRef);
+
+    const t = setTimeout(() => ScrollTrigger.refresh(), 150);
+    return () => {
+      clearTimeout(t);
+      ctx.revert();
+    };
+  }, []);
+
+  const onDashMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setGlow({ x: ((e.clientX - rect.left) / rect.width) * 100, y: ((e.clientY - rect.top) / rect.height) * 100, on: true });
+  };
+
+  return (
+    <div
+      ref={stageRef}
+      className="relative flex h-screen w-full items-center justify-center overflow-hidden"
+    >
+      {/* Ambient glow */}
+      <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+        <div
+          ref={glowRef}
+          className="h-[700px] w-[700px] rounded-full"
+          style={{ background: "radial-gradient(circle, rgba(139,92,246,0.4) 0%, rgba(99,102,241,0.15) 40%, transparent 70%)", filter: "blur(50px)" }}
+        />
       </div>
 
-      {/* Dashboard content */}
-      <div className="p-5">
-        {/* Header row */}
-        <div className="flex items-center justify-between mb-5">
-          <div>
-            <div className="text-white font-display font-semibold text-sm mb-0.5">Good morning ✦</div>
-            <div className="text-white/25 text-xs">Here&apos;s your creator snapshot</div>
+      {/* Title */}
+      <div className="pointer-events-none absolute left-1/2 top-[7%] -translate-x-1/2 text-center">
+        <div ref={titleRef}>
+          <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-emerald-500/25 bg-emerald-500/[0.08] px-3 py-1">
+            <span className="h-1 w-1 animate-pulse rounded-full bg-emerald-400" />
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-emerald-400/80">Featured · Live</span>
           </div>
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-            style={{ background: "rgba(139,92,246,0.12)", border: "1px solid rgba(139,92,246,0.2)" }}>
-            <Star size={10} className="text-violet-400" />
-            <span className="text-violet-300 text-xs font-medium">Score: 84</span>
-          </div>
+          <h2 className="font-display font-bold leading-none text-white" style={{ fontSize: "clamp(2.5rem, 5vw, 4.5rem)", letterSpacing: "-0.04em" }}>
+            Unipost
+          </h2>
+          <p className="mt-2 font-medium text-violet-300/70" style={{ fontSize: "clamp(0.8rem, 1.1vw, 1rem)" }}>
+            Schedule. Analyse. Grow.
+          </p>
         </div>
+      </div>
 
-        {/* Stats row */}
-        <div className="grid grid-cols-3 gap-3 mb-5">
-          {[
-            { label: "Followers", value: "12.4K", change: "+2.3%" },
-            { label: "Reach", value: "48.1K", change: "+8.7%" },
-            { label: "Eng. Rate", value: "5.2%", change: "+0.4%" },
-          ].map((stat) => (
+      {/* Dashboard (flex-centered; GSAP owns its transform) */}
+      <div ref={dashRef} className="w-[min(58vw,800px)]">
+        <div
+          className="animate-float-slow"
+          onMouseMove={onDashMove}
+          onMouseLeave={() => setGlow((g) => ({ ...g, on: false }))}
+          data-cursor-label="Explore"
+        >
+          <div className="relative">
+            <DashboardMockup />
             <div
-              key={stat.label}
-              className="rounded-xl p-3 border border-white/[0.05]"
-              style={{ background: "rgba(255,255,255,0.02)" }}
-            >
-              <div className="text-white/30 text-[9px] mb-1 uppercase tracking-wider">{stat.label}</div>
-              <div className="text-white font-display font-bold text-base">{stat.value}</div>
-              <div className="text-green-400 text-[9px] mt-0.5">{stat.change}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* Mini chart */}
-        <div className="rounded-xl border border-white/[0.05] p-3 mb-4"
-          style={{ background: "rgba(255,255,255,0.02)" }}>
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-white/40 text-[10px] uppercase tracking-wider">Growth Trend</span>
-            <span className="text-violet-400 text-[10px]">7 days</span>
+              className="pointer-events-none absolute inset-0 rounded-2xl transition-opacity duration-300"
+              style={{
+                opacity: glow.on ? 1 : 0,
+                background: `radial-gradient(circle at ${glow.x}% ${glow.y}%, rgba(255,255,255,0.06), transparent 55%)`,
+              }}
+            />
           </div>
-          {/* SVG chart */}
-          <svg width="100%" height="40" viewBox="0 0 200 40" preserveAspectRatio="none">
-            <defs>
-              <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.3" />
-                <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0" />
-              </linearGradient>
-            </defs>
-            <path d="M0,32 C20,30 40,28 60,22 C80,16 100,20 120,14 C140,8 160,12 180,6 L200,4 L200,40 L0,40Z"
-              fill="url(#chartGrad)" />
-            <path d="M0,32 C20,30 40,28 60,22 C80,16 100,20 120,14 C140,8 160,12 180,6 L200,4"
-              fill="none" stroke="#8b5cf6" strokeWidth="1.5" />
-          </svg>
         </div>
+      </div>
 
-        {/* Scheduled posts */}
-        <div className="text-white/25 text-[9px] uppercase tracking-wider mb-2">Scheduled Today</div>
-        <div className="flex flex-col gap-1.5">
-          {["Instagram • 11:00 AM", "LinkedIn • 2:30 PM", "Twitter/X • 6:00 PM"].map((post) => (
-            <div key={post} className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg"
-              style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.04)" }}>
-              <div className="w-1.5 h-1.5 rounded-full bg-violet-400" />
-              <span className="text-white/40 text-[10px]">{post}</span>
-            </div>
-          ))}
+      {/* Phone */}
+      <div className="absolute bottom-[7%] right-[6%]">
+        <div ref={phoneRef}>
+          <div className="animate-float">
+            <PhoneMockup />
+          </div>
         </div>
+      </div>
+
+      {/* Feature callouts */}
+      {features.map((f, i) => (
+        <div key={f.title} className={`absolute ${f.pos}`} style={{ perspective: "800px" }}>
+          <div
+            ref={(el) => {
+              featureRefs.current[i] = el;
+            }}
+          >
+            <FeatureCallout feature={f} />
+          </div>
+        </div>
+      ))}
+
+      {/* CTA */}
+      <div className="absolute bottom-[6%] left-1/2 -translate-x-1/2">
+        <div ref={ctaRef} className="flex flex-col items-center gap-2">
+          <a
+            href="https://unipost.in"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-cursor-label="Open"
+            className="group flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-semibold text-black transition-shadow duration-300 hover:shadow-[0_0_50px_rgba(255,255,255,0.25)]"
+          >
+            Open Unipost
+            <ArrowUpRight size={14} className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          </a>
+          <span className="font-mono text-[10px] tracking-wider text-white/25">unipost.in</span>
+        </div>
+      </div>
+
+      {/* Scroll hint */}
+      <div ref={hintRef} className="pointer-events-none absolute bottom-8 left-1/2 -translate-x-1/2 text-center">
+        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/30">Scroll to unveil ↓</span>
       </div>
     </div>
   );
 }
 
-export default function UnipostShowcase() {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"],
-  });
-
-  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "-10%"]);
-
+/* ------------------------------------------------------------------ *
+ * STATIC FALLBACK — mobile & reduced-motion (clean, no pin)
+ * ------------------------------------------------------------------ */
+function StaticShowcase() {
   return (
-    <div
-      ref={sectionRef}
-      className="relative rounded-3xl overflow-hidden border border-white/[0.06] mb-6"
-      style={{ background: "rgba(8, 8, 15, 0.8)" }}
-    >
-      {/* Background gradient */}
-      <motion.div
-        className="absolute inset-0 pointer-events-none"
-        style={{ y: bgY }}
-      >
+    <div className="container-custom">
+      <div className="relative overflow-hidden rounded-3xl border border-white/[0.07] p-6 sm:p-10" style={{ background: "rgba(8,8,15,0.8)" }}>
         <div
-          className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full opacity-20"
-          style={{
-            background: "radial-gradient(circle, rgba(139,92,246,0.4) 0%, transparent 70%)",
-            filter: "blur(60px)",
-          }}
+          aria-hidden
+          className="pointer-events-none absolute right-0 top-0 h-96 w-96 rounded-full opacity-20"
+          style={{ background: "radial-gradient(circle, rgba(139,92,246,0.4) 0%, transparent 70%)", filter: "blur(60px)" }}
         />
-        <div
-          className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full opacity-15"
-          style={{
-            background: "radial-gradient(circle, rgba(99,102,241,0.3) 0%, transparent 70%)",
-            filter: "blur(60px)",
-          }}
-        />
-      </motion.div>
 
-      <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-12 p-8 lg:p-12">
-        {/* Left: Info */}
-        <div className="flex flex-col justify-between">
-          {/* Header */}
-          <div>
-            <div className="flex items-center gap-3 mb-6">
-              <span
-                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-medium tracking-wider uppercase"
-                style={{
-                  background: "rgba(16,185,129,0.12)",
-                  border: "1px solid rgba(16,185,129,0.25)",
-                  color: "#10b981",
-                }}
-              >
-                <span className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse" />
-                Live
-              </span>
-              <span className="label text-white/20">Featured Product</span>
-            </div>
-
-            <div className="overflow-hidden mb-1">
-              <motion.h2
-                className="font-display font-bold text-white"
-                style={{
-                  fontSize: "clamp(3rem, 6vw, 5.5rem)",
-                  letterSpacing: "-0.04em",
-                  lineHeight: 1,
-                }}
-                initial={{ y: "105%" }}
-                whileInView={{ y: "0%" }}
-                viewport={{ once: true }}
-                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-              >
-                Unipost
-              </motion.h2>
-            </div>
-
-            <motion.p
-              className="text-violet-400/70 font-medium text-base mb-6"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3 }}
-            >
-              Schedule. Analyse. Grow.
-            </motion.p>
-
-            <motion.p
-              className="text-white/40 text-sm leading-relaxed mb-8 max-w-sm"
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.4 }}
-            >
-              India&apos;s most intelligent social media co-pilot. Unipost helps
-              creators and businesses grow their audience smarter — with AI at
-              the centre.
-            </motion.p>
-
-            {/* Feature list */}
-            <div className="flex flex-col gap-4 mb-10">
-              {features.map((feature, i) => (
-                <motion.div
-                  key={feature.title}
-                  className="flex items-start gap-4 group"
-                  initial={{ opacity: 0, x: -16 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.5 + i * 0.08, duration: 0.7 }}
-                >
-                  <div
-                    className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
-                    style={{
-                      background: `${feature.color}15`,
-                      border: `1px solid ${feature.color}25`,
-                    }}
-                  >
-                    <feature.icon size={14} style={{ color: feature.color }} />
-                  </div>
-                  <div>
-                    <div className="text-white text-sm font-medium mb-0.5">{feature.title}</div>
-                    <div className="text-white/30 text-xs leading-relaxed">{feature.description}</div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+        <div className="relative mb-8">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-500/25 bg-emerald-500/[0.08] px-3 py-1">
+            <span className="h-1 w-1 rounded-full bg-emerald-400" />
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-emerald-400/80">Featured · Live</span>
           </div>
-
-          {/* CTA */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.8 }}
-          >
-            <a
-              href="https://unipost.in"
-              target="_blank"
-              rel="noopener noreferrer"
-              data-cursor-label="Open"
-              className="group inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-black text-sm font-semibold hover:bg-white/90 transition-all duration-300 hover:shadow-[0_0_30px_rgba(255,255,255,0.15)]"
-            >
-              Open Unipost
-              <ArrowUpRight
-                size={14}
-                className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-              />
-            </a>
-          </motion.div>
+          <h2 className="font-display font-bold text-white" style={{ fontSize: "clamp(2.5rem, 9vw, 3.5rem)", letterSpacing: "-0.04em" }}>
+            Unipost
+          </h2>
+          <p className="mt-2 font-medium text-violet-300/70">Schedule. Analyse. Grow.</p>
+          <p className="mt-4 max-w-md text-sm leading-relaxed text-white/40">
+            India&apos;s most intelligent social media co-pilot. Grow your
+            audience smarter — with AI at the centre.
+          </p>
         </div>
 
-        {/* Right: Dashboard mockup */}
-        <motion.div
-          initial={{ opacity: 0, y: 32, scale: 0.97 }}
-          whileInView={{ opacity: 1, y: 0, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          className="animate-float"
+        <div className="relative mb-8">
+          <DashboardMockup />
+        </div>
+
+        <div className="mb-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {features.map((f) => {
+            const Icon = f.icon;
+            return (
+              <motion.div
+                key={f.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ duration: 0.6 }}
+                className="flex items-start gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4"
+              >
+                <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg" style={{ background: `${f.color}18`, border: `1px solid ${f.color}30` }}>
+                  <Icon size={14} style={{ color: f.color }} />
+                </div>
+                <div>
+                  <div className="mb-0.5 text-sm font-semibold text-white">{f.title}</div>
+                  <p className="text-[11px] leading-relaxed text-white/40">{f.body}</p>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        <a
+          href="https://unipost.in"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-black transition-shadow duration-300 hover:shadow-[0_0_30px_rgba(255,255,255,0.2)]"
         >
-          <MockDashboard />
-        </motion.div>
+          Open Unipost
+          <ArrowUpRight size={14} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+        </a>
       </div>
     </div>
   );
+}
+
+/* ------------------------------------------------------------------ *
+ * Orchestrator — pinned on xl + fine-motion, static otherwise
+ * ------------------------------------------------------------------ */
+export default function UnipostShowcase() {
+  const mounted = useMounted();
+  const isXl = useBreakpoint("xl");
+  const reduced = usePrefersReducedMotion();
+  const pinned = mounted && isXl && !reduced;
+
+  return pinned ? <PinnedReveal /> : <StaticShowcase />;
 }

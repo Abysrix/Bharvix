@@ -125,7 +125,7 @@ export default function Hero({ start = true }: HeroProps) {
         aria-hidden
         initial={{ opacity: 0 }}
         animate={{ opacity: start ? 1 : 0 }}
-        transition={{ duration: 1, delay: reduced ? 0.3 : 1.6 }}
+        transition={{ duration: 1, delay: 1.6 }}
         className="pointer-events-none absolute inset-0 z-[4]"
       >
         <span className="absolute left-6 top-24 font-mono text-[10px] tracking-[0.2em] text-white/15 md:left-10">
@@ -213,7 +213,7 @@ export default function Hero({ start = true }: HeroProps) {
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={start ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, delay: reduced ? 0.2 : 0.72, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.8, delay: 0.72, ease: [0.16, 1, 0.3, 1] }}
           className="mb-11 max-w-xl text-balance text-base font-light leading-relaxed text-white/45 md:text-lg"
         >
           We build AI-native products solving real problems for creators,
@@ -225,7 +225,7 @@ export default function Hero({ start = true }: HeroProps) {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={start ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, delay: reduced ? 0.28 : 0.86, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.8, delay: 0.86, ease: [0.16, 1, 0.3, 1] }}
           className="flex flex-wrap items-center justify-center gap-4"
         >
           <a
@@ -256,7 +256,7 @@ export default function Hero({ start = true }: HeroProps) {
         aria-hidden
         initial={{ opacity: 0 }}
         animate={{ opacity: start ? 1 : 0 }}
-        transition={{ duration: 0.8, delay: reduced ? 0.4 : 1.5 }}
+        transition={{ duration: 0.8, delay: 1.5 }}
         className="absolute bottom-8 left-1/2 z-[10] flex -translate-x-1/2 flex-col items-center gap-3"
       >
         <span className="font-mono text-[9px] uppercase tracking-[0.3em] text-white/25">
