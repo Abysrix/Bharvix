@@ -39,10 +39,20 @@ export default function Preloader({ onComplete }: PreloaderProps) {
     }
 
     const DURATION = 1650; // ms to reach 100
-    const start = performance.now();
+    let lastTime = performance.now();
+    let accumulatedTime = 0;
 
     const tick = (now: number) => {
-      const t = Math.min((now - start) / DURATION, 1);
+      let dt = now - lastTime;
+      lastTime = now;
+
+      // Cap delta time per frame to prevent large skips during initial load lags
+      if (dt > 33) {
+        dt = 33;
+      }
+
+      accumulatedTime += dt;
+      const t = Math.min(accumulatedTime / DURATION, 1);
       // easeInOutCubic for an organic, mechanical climb
       const eased =
         t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
