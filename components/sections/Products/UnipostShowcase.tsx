@@ -42,7 +42,7 @@ function FeatureCallout({ feature }: { feature: Feature }) {
       style={{
         transform: `rotateX(${tilt.rotate.x}deg) rotateY(${tilt.rotate.y}deg)`,
         transformStyle: "preserve-3d",
-        transition: "transform 0.2s ease-out",
+        transition: "transform 0.45s cubic-bezier(0.16, 1, 0.3, 1)",
         boxShadow: `0 20px 50px -20px ${feature.color}30`,
       }}
     >
@@ -268,9 +268,15 @@ function StaticShowcase() {
           </p>
         </div>
 
-        <div className="relative mb-8">
+        <motion.div
+          className="relative mb-8"
+          initial={{ opacity: 0, y: 44, scale: 0.97 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+        >
           <DashboardMockup />
-        </div>
+        </motion.div>
 
         <div className="mb-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
           {features.map((f) => {

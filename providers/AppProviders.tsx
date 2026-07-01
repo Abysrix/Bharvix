@@ -32,10 +32,13 @@ export default function AppProviders({
   }, []);
 
   return (
-    // reducedMotion="user" makes every Framer animation honor the OS setting
-    // automatically — transforms collapse, opacity stays — so sections don't
-    // each re-implement reduced-motion guards.
-    <MotionConfig reducedMotion="user">
+    // NOTE: we intentionally do NOT use reducedMotion="user" here. It strips the
+    // `y` transform from `animate` targets while leaving `initial` applied, which
+    // permanently traps our curtain/mask headings (initial y:110%) outside their
+    // overflow-hidden wrappers for reduced-motion users. Reduced motion is instead
+    // honored explicitly where it matters most (WebGL, GSAP scrub/pin, cursor tilt,
+    // count-up) via usePrefersReducedMotion — those degrade to static.
+    <MotionConfig reducedMotion="never">
       <CustomCursor />
       {children}
     </MotionConfig>

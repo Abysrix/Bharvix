@@ -92,7 +92,7 @@ function FounderCard({ founder, index }: { founder: Founder; index: number }) {
           style={{
             transform: `rotateX(${tilt.rotate.x}deg) rotateY(${tilt.rotate.y}deg)`,
             transformStyle: "preserve-3d",
-            transition: "transform 0.15s ease-out",
+            transition: "transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
           }}
         >
           {/* Gradient light — grayscale → colour on hover */}

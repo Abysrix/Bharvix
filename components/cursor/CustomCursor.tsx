@@ -22,11 +22,11 @@ export default function CustomCursor() {
   const mouseX = useMotionValue(-100);
   const mouseY = useMotionValue(-100);
 
-  // Dot: fast + tight. Ring: soft + trailing.
-  const dotX = useSpring(mouseX, { stiffness: 1600, damping: 60, mass: 0.3 });
-  const dotY = useSpring(mouseY, { stiffness: 1600, damping: 60, mass: 0.3 });
-  const ringX = useSpring(mouseX, { stiffness: 220, damping: 26, mass: 0.6 });
-  const ringY = useSpring(mouseY, { stiffness: 220, damping: 26, mass: 0.6 });
+  // Dot: fast + tight. Ring: soft + heavy, trailing with graceful lag.
+  const dotX = useSpring(mouseX, { stiffness: 1250, damping: 52, mass: 0.32 });
+  const dotY = useSpring(mouseY, { stiffness: 1250, damping: 52, mass: 0.32 });
+  const ringX = useSpring(mouseX, { stiffness: 150, damping: 20, mass: 0.75 });
+  const ringY = useSpring(mouseY, { stiffness: 150, damping: 20, mass: 0.75 });
 
   useEffect(() => {
     setEnabled(finePointer);
@@ -86,7 +86,7 @@ export default function CustomCursor() {
         className="fixed top-0 left-0 mix-blend-difference"
         style={{ x: dotX, y: dotY, translateX: "-50%", translateY: "-50%" }}
         animate={{ opacity: hidden ? 0 : 1, scale: isPointer ? 0 : isDown ? 0.6 : 1 }}
-        transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
       >
         <div className="h-1.5 w-1.5 rounded-full bg-white" />
       </motion.div>
@@ -96,7 +96,7 @@ export default function CustomCursor() {
         className="fixed top-0 left-0"
         style={{ x: ringX, y: ringY, translateX: "-50%", translateY: "-50%" }}
         animate={{ opacity: hidden ? 0 : 1, scale: ringScale }}
-        transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
       >
         <div
           className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border transition-colors duration-300"

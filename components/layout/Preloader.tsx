@@ -24,7 +24,7 @@ export default function Preloader({ onComplete }: PreloaderProps) {
     let timeoutId1: NodeJS.Timeout;
     let timeoutId2: NodeJS.Timeout;
 
-    const DURATION = 1650; // ms to reach 100
+    const DURATION = 1950; // ms to reach 100 — a deliberate, unhurried climb
     let lastTime = performance.now();
     let accumulatedTime = 0;
 
@@ -48,7 +48,7 @@ export default function Preloader({ onComplete }: PreloaderProps) {
       } else {
         timeoutId1 = setTimeout(() => {
           setDone(true);
-          timeoutId2 = setTimeout(() => onComplete?.(), 850);
+          timeoutId2 = setTimeout(() => onComplete?.(), 1000);
         }, 260);
       }
     };
@@ -65,11 +65,13 @@ export default function Preloader({ onComplete }: PreloaderProps) {
     <AnimatePresence>
       {!done && (
         <motion.div
+          key="preloader-curtain"
           className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-hidden"
           style={{ background: "#050508" }}
           exit={{
             clipPath: "inset(0 0 100% 0)",
-            transition: { duration: 0.85, ease: [0.76, 0, 0.24, 1] },
+            scale: 1.06,
+            transition: { duration: 1.0, ease: [0.76, 0, 0.24, 1] },
           }}
         >
           {/* Grain */}
@@ -97,8 +99,8 @@ export default function Preloader({ onComplete }: PreloaderProps) {
             className="relative"
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            exit={{ y: -20, transition: { duration: 0.5, ease: [0.76, 0, 0.24, 1] } }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            exit={{ y: -44, opacity: 0, scale: 0.97, transition: { duration: 0.6, ease: [0.76, 0, 0.24, 1] } }}
           >
             {/* Outline layer */}
             <span

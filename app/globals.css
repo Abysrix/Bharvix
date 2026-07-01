@@ -244,7 +244,7 @@ body::before {
   width: 0;
   height: 1px;
   background: rgba(139, 92, 246, 0.7);
-  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: width 0.55s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .link-underline:hover::after {
   width: 100%;
@@ -267,7 +267,7 @@ body::before {
 }
 
 .animate-float {
-  animation: float 6s ease-in-out infinite;
+  animation: float 9s ease-in-out infinite;
 }
 
 @keyframes floatSlow {
@@ -276,7 +276,7 @@ body::before {
 }
 
 .animate-float-slow {
-  animation: floatSlow 8s ease-in-out infinite;
+  animation: floatSlow 13s ease-in-out infinite;
 }
 
 /* Shimmer */
@@ -294,7 +294,7 @@ body::before {
   position: absolute;
   inset: 0;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
-  animation: shimmerMove 2.5s ease-in-out infinite;
+  animation: shimmerMove 3.6s ease-in-out infinite;
 }
 
 /* Radial gradient spots */

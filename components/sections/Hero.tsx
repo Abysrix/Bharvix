@@ -65,8 +65,8 @@ export default function Hero({ start = true }: HeroProps) {
               "radial-gradient(circle, rgba(99,102,241,0.28) 0%, rgba(139,92,246,0.14) 40%, transparent 70%)",
             filter: "blur(60px)",
           }}
-          animate={reduced ? {} : { x: [0, 40, 0], y: [0, -30, 0] }}
-          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+          animate={reduced ? {} : { x: [0, 48, 0], y: [0, -34, 0] }}
+          transition={{ duration: 28, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div
           className="absolute left-[18%] top-[62%] h-[420px] w-[420px] rounded-full"
@@ -74,8 +74,8 @@ export default function Hero({ start = true }: HeroProps) {
             background: "radial-gradient(circle, rgba(236,72,153,0.16) 0%, transparent 70%)",
             filter: "blur(50px)",
           }}
-          animate={reduced ? {} : { x: [0, -30, 0], y: [0, 25, 0] }}
-          transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
+          animate={reduced ? {} : { x: [0, -34, 0], y: [0, 28, 0] }}
+          transition={{ duration: 34, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div
           className="absolute right-[16%] top-[28%] h-[360px] w-[360px] rounded-full"
@@ -83,8 +83,8 @@ export default function Hero({ start = true }: HeroProps) {
             background: "radial-gradient(circle, rgba(59,130,246,0.18) 0%, transparent 70%)",
             filter: "blur(45px)",
           }}
-          animate={reduced ? {} : { x: [0, 25, 0], y: [0, 20, 0] }}
-          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+          animate={reduced ? {} : { x: [0, 28, 0], y: [0, 22, 0] }}
+          transition={{ duration: 31, repeat: Infinity, ease: "easeInOut" }}
         />
 
         {/* Particle field — swapped for static glows under reduced motion */}
@@ -195,8 +195,8 @@ export default function Hero({ start = true }: HeroProps) {
                       initial="hidden"
                       animate={start ? "visible" : "hidden"}
                       transition={{
-                        duration: 0.95,
-                        delay: 0.1 + i * 0.065,
+                        duration: 1.15,
+                        delay: 0.1 + i * 0.085,
                         ease: [0.16, 1, 0.3, 1],
                       }}
                     >
@@ -231,12 +231,12 @@ export default function Hero({ start = true }: HeroProps) {
           <a
             href="#products"
             data-cursor-label="View"
-            className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-white px-7 py-3.5 text-sm font-semibold text-black transition-all duration-300 hover:shadow-[0_0_50px_rgba(255,255,255,0.2)]"
+            className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-white px-7 py-3.5 text-sm font-semibold text-black transition-all duration-500 hover:shadow-[0_0_50px_rgba(255,255,255,0.2)]"
           >
             <span className="relative z-10">Explore Products</span>
             <ArrowUpRight
               size={15}
-              className="relative z-10 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              className="relative z-10 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
             />
             <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-black/[0.06] to-transparent transition-transform duration-700 group-hover:translate-x-full" />
           </a>
@@ -244,7 +244,7 @@ export default function Hero({ start = true }: HeroProps) {
           <a
             href="#about"
             data-cursor-label="Story"
-            className="group inline-flex items-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.03] px-7 py-3.5 text-sm font-medium text-white/70 backdrop-blur-sm transition-all duration-300 hover:border-white/25 hover:bg-white/[0.07] hover:text-white"
+            className="group inline-flex items-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.03] px-7 py-3.5 text-sm font-medium text-white/70 backdrop-blur-sm transition-all duration-500 hover:border-white/25 hover:bg-white/[0.07] hover:text-white"
           >
             <span>Our Story</span>
           </a>
@@ -267,7 +267,7 @@ export default function Hero({ start = true }: HeroProps) {
             <motion.span
               className="absolute left-0 top-0 h-4 w-px bg-gradient-to-b from-violet-400 to-transparent"
               animate={{ y: ["-100%", "250%"] }}
-              transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+              transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
             />
           )}
         </div>

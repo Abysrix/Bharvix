@@ -14,13 +14,15 @@ export function useLenis() {
 
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.3,
+      // Heavier, more cinematic glide — a longer settle reads as "expensive".
+      duration: 1.6,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: "vertical",
       gestureOrientation: "vertical",
       smoothWheel: true,
-      wheelMultiplier: 1,
-      touchMultiplier: 2,
+      wheelMultiplier: 0.92,
+      touchMultiplier: 1.8,
+      syncTouch: true,
     });
 
     lenisInstance = lenis;

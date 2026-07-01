@@ -194,25 +194,27 @@ export const ease = {
 } as const;
 
 export const duration = {
-  fast: 0.4,
-  base: 0.6,
-  slow: 0.9,
-  cinematic: 1.2,
+  fast: 0.45,
+  base: 0.7,
+  slow: 1.0,
+  cinematic: 1.4,
 } as const;
 
 /** Stagger steps between choreographed children */
 export const stagger = {
-  tight: 0.06,
-  base: 0.08,
-  loose: 0.12,
+  tight: 0.07,
+  base: 0.09,
+  loose: 0.14,
 } as const;
 
-/** Spring presets (Framer). Cursor dot is stiff/instant; ring is soft/trailing. */
+/** Spring presets (Framer). Cursor dot is stiff/instant; ring is soft/trailing.
+ *  Tuned heavy: low-ish stiffness + higher mass = a graceful, "expensive" glide
+ *  that settles rather than snaps. */
 export const spring = {
-  cursorDot: { stiffness: 3000, damping: 80 },
-  cursorRing: { stiffness: 200, damping: 30 },
-  magnetic: { stiffness: 300, damping: 30 },
-  nav: { type: "spring", bounce: 0.2, duration: 0.4 },
+  cursorDot: { stiffness: 1400, damping: 55, mass: 0.35 },
+  cursorRing: { stiffness: 160, damping: 22, mass: 0.7 },
+  magnetic: { stiffness: 200, damping: 18, mass: 0.6 },
+  nav: { type: "spring", bounce: 0.12, duration: 0.6 },
 } as const;
 
 /* ============================================================

@@ -22,7 +22,7 @@ export default function Home() {
 
   return (
     <>
-      <Preloader onComplete={handleComplete} />
+      {!started && <Preloader onComplete={handleComplete} />}
 
       {started && <Navigation />}
 

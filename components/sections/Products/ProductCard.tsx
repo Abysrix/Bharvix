@@ -73,7 +73,7 @@ export default function ProductCard({
         onMouseMove={onMouseMove}
         onMouseLeave={onMouseLeave}
         animate={{ rotateX, rotateY }}
-        transition={{ duration: 0.15, ease: "linear" }}
+        transition={{ type: "spring", stiffness: 150, damping: 18, mass: 0.6 }}
         className="relative group glass-card rounded-2xl p-7 overflow-hidden h-full"
         style={{ transformStyle: "preserve-3d" }}
       >

@@ -1,6 +1,8 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useRef } from "react";
+import { motion, useInView } from "framer-motion";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import UnipostShowcase from "./UnipostShowcase";
 import ProductCard from "./ProductCard";
 
@@ -26,6 +28,9 @@ const comingSoonProducts = [
 ];
 
 export default function Products() {
+  const headRef = useRef(null);
+  const headInView = useInView(headRef, { once: true, margin: "-100px" });
+  const reduced = usePrefersReducedMotion();
   return (
     // NOTE: no `overflow-hidden` here — it would break the GSAP-pinned stage
     // inside UnipostShowcase. Decorative bleed is clipped by an inner wrapper.
@@ -38,12 +43,11 @@ export default function Products() {
       </div>
 
       {/* Header */}
-      <div className="container-custom relative mb-4">
+      <div ref={headRef} className="container-custom relative mb-4">
         <motion.span
           className="mb-4 block font-mono text-[11px] uppercase tracking-[0.2em] text-violet-400/60"
           initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
+          animate={headInView ? { opacity: 1 } : undefined}
         >
           Our Portfolio
         </motion.span>
@@ -53,9 +57,8 @@ export default function Products() {
             <motion.h2
               className="font-display font-bold text-white"
               style={{ fontSize: "clamp(2.5rem, 5.5vw, 5.5rem)", lineHeight: 1, letterSpacing: "-0.04em" }}
-              initial={{ y: "110%" }}
-              whileInView={{ y: "0%" }}
-              viewport={{ once: true }}
+              initial={{ y: reduced ? "0%" : "110%" }}
+              animate={headInView ? { y: "0%" } : undefined}
               transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
             >
               Products that <span className="text-gradient-purple">matter.</span>
@@ -65,8 +68,7 @@ export default function Products() {
           <motion.p
             className="max-w-xs text-sm leading-relaxed text-white/30 md:text-right"
             initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
+            animate={headInView ? { opacity: 1 } : undefined}
             transition={{ delay: 0.4 }}
           >
             Every product we ship is a bet we&apos;re making on India&apos;s

@@ -60,7 +60,7 @@ export default function GlassCard({
         onMouseMove={onMouseMove}
         onMouseLeave={onMouseLeave}
         animate={{ rotateX: transform.rx, rotateY: transform.ry }}
-        transition={{ duration: 0.15, ease: "linear" }}
+        transition={{ type: "spring", stiffness: 150, damping: 18, mass: 0.6 }}
         data-cursor-label={cursorLabel}
         className={cn(
           "relative group h-full rounded-2xl p-7 overflow-hidden",
