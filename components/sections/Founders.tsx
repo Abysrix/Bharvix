@@ -20,7 +20,7 @@ type Founder = {
 const founders: Founder[] = [
   {
     name: "Devansh Tiwari",
-    role: "Co-Founder & CEO",
+    role: "Founder",
     initial: "DT",
     philosophy:
       "India doesn't need more copies of Silicon Valley ideas. It needs products born from Indian problems, built with Indian ambition.",
@@ -31,7 +31,7 @@ const founders: Founder[] = [
   },
   {
     name: "Harshit Kumar",
-    role: "Co-Founder & CTO",
+    role: "Co-Founder",
     initial: "HK",
     philosophy:
       "The best products aren't built — they're engineered. Every architectural decision is a product decision.",
