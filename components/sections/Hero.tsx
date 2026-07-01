@@ -188,14 +188,12 @@ export default function Hero({ start = true }: HeroProps) {
                           ? "inline-block text-stroke-white"
                           : "inline-block"
                       }
-                      initial={reduced ? false : { y: "115%", opacity: 0, filter: "blur(8px)" }}
-                      animate={
-                        reduced
-                          ? {}
-                          : reveal
-                          ? { y: "0%", opacity: 1, filter: "blur(0px)" }
-                          : { y: "115%", opacity: 0 }
-                      }
+                      variants={{
+                        hidden: { y: "115%", opacity: 0, filter: "blur(8px)" },
+                        visible: { y: "0%", opacity: 1, filter: "blur(0px)" },
+                      }}
+                      initial="hidden"
+                      animate={start ? "visible" : "hidden"}
                       transition={{
                         duration: 0.95,
                         delay: 0.1 + i * 0.065,
