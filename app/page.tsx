@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import Preloader from "@/components/layout/Preloader";
 import Navigation from "@/components/layout/Navigation";
 import Hero from "@/components/sections/Hero";
@@ -15,9 +15,13 @@ import Footer from "@/components/sections/Footer";
 export default function Home() {
   const [started, setStarted] = useState(false);
 
+  const handleComplete = useCallback(() => {
+    setStarted(true);
+  }, []);
+
   return (
     <>
-      <Preloader onComplete={() => setStarted(true)} />
+      <Preloader onComplete={handleComplete} />
 
       {started && <Navigation />}
 

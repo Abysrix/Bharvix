@@ -23,13 +23,19 @@ export default function Preloader({ onComplete }: PreloaderProps) {
   const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
+    let timeoutId1: NodeJS.Timeout;
+    let timeoutId2: NodeJS.Timeout;
+
     if (reduced) {
       setPct(100);
-      const t = setTimeout(() => {
+      timeoutId1 = setTimeout(() => {
         setDone(true);
-        setTimeout(() => onComplete?.(), 300);
+        timeoutId2 = setTimeout(() => onComplete?.(), 300);
       }, 350);
-      return () => clearTimeout(t);
+      return () => {
+        clearTimeout(timeoutId1);
+        clearTimeout(timeoutId2);
+      };
     }
 
     const DURATION = 1650; // ms to reach 100
@@ -44,9 +50,9 @@ export default function Preloader({ onComplete }: PreloaderProps) {
       if (t < 1) {
         rafRef.current = requestAnimationFrame(tick);
       } else {
-        setTimeout(() => {
+        timeoutId1 = setTimeout(() => {
           setDone(true);
-          setTimeout(() => onComplete?.(), 850);
+          timeoutId2 = setTimeout(() => onComplete?.(), 850);
         }, 260);
       }
     };
@@ -54,6 +60,8 @@ export default function Preloader({ onComplete }: PreloaderProps) {
     rafRef.current = requestAnimationFrame(tick);
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      clearTimeout(timeoutId1);
+      clearTimeout(timeoutId2);
     };
   }, [reduced, onComplete]);
 
