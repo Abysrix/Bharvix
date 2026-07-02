@@ -219,7 +219,7 @@ function PinnedReveal() {
       <div className="absolute bottom-[6%] left-1/2 -translate-x-1/2">
         <div ref={ctaRef} className="flex flex-col items-center gap-2">
           <a
-            href="https://unipost.in"
+            href="https://unipost.bharvix.com"
             target="_blank"
             rel="noopener noreferrer"
             data-cursor-label="Open"
@@ -303,7 +303,7 @@ function StaticShowcase() {
         </div>
 
         <a
-          href="https://unipost.in"
+          href="https://unipost.bharvix.com"
           target="_blank"
           rel="noopener noreferrer"
           className="group inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-black transition-shadow duration-300 hover:shadow-[0_0_30px_rgba(255,255,255,0.2)]"

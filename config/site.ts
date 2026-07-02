@@ -15,7 +15,7 @@ export const siteConfig = {
   locale: "en_IN",
   founded: 2025,
   location: "India",
-  email: "hello@bharvix.com",
+  email: "connect@bharvix.com",
   ogImage: "/og.png",
   twitterHandle: "@bharvix",
 } as const;
@@ -47,7 +47,7 @@ export const mainNav: NavItem[] = [
 
 export const footerNav = {
   Products: [
-    { label: "Unipost", href: "https://unipost.in", external: true },
+    { label: "Unipost", href: "https://unipost.bharvix.com", external: true },
     { label: "Zuppy", href: "#", external: false },
     { label: "Jarvis", href: "#", external: false },
   ],
@@ -59,7 +59,7 @@ export const footerNav = {
   Connect: [
     { label: "Twitter / X", href: "https://twitter.com/bharvix", external: true },
     { label: "LinkedIn", href: "https://linkedin.com/company/bharvix", external: true },
-    { label: "hello@bharvix.com", href: "mailto:hello@bharvix.com", external: false },
+    { label: "connect@bharvix.com", href: "mailto:connect@bharvix.com", external: false },
   ],
 } as const;
 
@@ -97,7 +97,7 @@ export const products: Product[] = [
     status: "live",
     accent: "#8b5cf6",
     tags: ["Scheduling", "Analytics", "Growth Coach", "Creator Score"],
-    url: "https://unipost.in",
+    url: "https://unipost.bharvix.com",
     featured: true,
   },
   {

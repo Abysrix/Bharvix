@@ -130,10 +130,10 @@ export default function CTA() {
               transition={{ delay: 0.5 }}
               className="flex flex-wrap items-center justify-center gap-4"
             >
-              <MagneticButton href="https://unipost.in" external variant="primary" cursorLabel="View">
+              <MagneticButton href="https://unipost.bharvix.com" external variant="primary" cursorLabel="View">
                 Explore Products
               </MagneticButton>
-              <MagneticButton href="mailto:hello@bharvix.com" variant="secondary" cursorLabel="Email">
+              <MagneticButton href="mailto:connect@bharvix.com" variant="secondary" cursorLabel="Email">
                 Contact Bharvix
               </MagneticButton>
             </motion.div>
