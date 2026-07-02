@@ -47,7 +47,7 @@ export const mainNav: NavItem[] = [
 
 export const footerNav = {
   Products: [
-    { label: "Unipost", href: "https://unipost.in", external: true },
+    { label: "Unipost", href: "https://unipost.bharvix.com", external: true },
     { label: "Zuppy", href: "#", external: false },
     { label: "Jarvis", href: "#", external: false },
   ],
